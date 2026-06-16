@@ -1,0 +1,23 @@
+--- a/src/fw_iptables.c	2026-06-16 09:28:57.710741010 +0800
++++ b/src/fw_iptables.c	2026-06-16 09:46:50.100764894 +0800
+@@ -89,6 +89,8 @@
+ int
+ _iptables_init_marks()
+ {
++	s_config *config;
++
+ 	// Check FW_MARK values are distinct.
+ 	if (FW_MARK_TRUSTED == FW_MARK_AUTHENTICATED) {
+ 		debug(LOG_ERR, "FW_MARK_TRUSTED, FW_MARK_AUTHENTICATED not distinct values.");
+@@ -101,7 +103,11 @@
+ 		return -1;
+ 	}
+ 
++	LOCK_CONFIG();
++	config = config_get_config();
+ 	FW_MARK_PREAUTHENTICATED = config->fw_mark_preauthenticated;
++	UNLOCK_CONFIG();
++
+ 	// FW_MARK_MASK is bitwise OR of other marks (does NOT include preauthenticated)
+ 	// Preauthenticated mark uses an independent bit position so existing
+ 	// trusted/authenticated checks are unaffected
